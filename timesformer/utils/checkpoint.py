@@ -40,7 +40,9 @@ def get_checkpoint_dir(path_to_job):
     Args:
         path_to_job (string): the path to the folder of the current job.
     """
-    return os.path.join(path_to_job, "checkpoints")
+    path = "/content/gdrive/MyDrive/checkpoints"
+    return path
+    #return os.path.join(path_to_job, "checkpoints")
 
 
 def get_path_to_checkpoint(path_to_job, epoch):
