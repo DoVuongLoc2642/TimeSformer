@@ -169,11 +169,14 @@ def test(cfg):
     test_loader = loader.construct_loader(cfg, "test")
     logger.info("Testing model for {} iterations".format(len(test_loader)))
 
+    print(len(test_loader.dataset))
+
     assert (
         len(test_loader.dataset)
         % (cfg.TEST.NUM_ENSEMBLE_VIEWS * cfg.TEST.NUM_SPATIAL_CROPS)
         == 0
     )
+    
     # Create meters for multi-view testing.
     test_meter = TestMeter(
         len(test_loader.dataset)

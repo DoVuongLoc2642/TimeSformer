@@ -34,9 +34,16 @@ MODEL:
 TEST:
   ENABLE: True
   DATASET: kinetics
-  BATCH_SIZE: 4
+  BATCH_SIZE: 8
   NUM_ENSEMBLE_VIEWS: 1
   NUM_SPATIAL_CROPS: 3
+TENSORBOARD:
+  ENABLE: True
+  LOG_DIR: "/content/gdrive/MyDrive/tensorboard_log"
+  MODEL_VIS:
+    ENABLE: True
+  WRONG_PRED_VIS:
+    ENABLE: True
 DATA_LOADER:
   NUM_WORKERS: 8
   PIN_MEMORY: True
