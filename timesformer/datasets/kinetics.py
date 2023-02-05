@@ -94,21 +94,13 @@ class Kinetics(torch.utils.data.Dataset):
                 path, label = path_label.split(
                     self.cfg.DATA.PATH_LABEL_SEPARATOR
                 )
-                # print(path)
-                # print(label)
-                # for idx in range(self._num_clips):
-                #     self._path_to_videos.append(
-                #         os.path.join(self.cfg.DATA.PATH_PREFIX, path)
-                #     )
-                #     self._labels.append(int(label))
-                #     self._spatial_temporal_idx.append(idx)
-                #     self._video_meta[clip_idx * self._num_clips + idx] = {}
-                self._path_to_videos.append(
+                for idx in range(self._num_clips):
+                    self._path_to_videos.append(
                         os.path.join(self.cfg.DATA.PATH_TO_DATA_DIR, path)
                     )
-                self._labels.append(int(label))
-                self._spatial_temporal_idx.append(clip_idx)
-                self._video_meta[clip_idx] = {}
+                    self._labels.append(int(label))
+                    self._spatial_temporal_idx.append(idx)
+                    self._video_meta[clip_idx * self._num_clips + idx] = {}
         assert (
             len(self._path_to_videos) > 0
         ), "Failed to load Kinetics split {} from {}".format(
@@ -226,6 +218,9 @@ class Kinetics(torch.utils.data.Dataset):
                 continue
 
             # Decode video. Meta info is used to perform selective decoding.
+            
+            # print(self._video_meta[index])
+
             frames = decoder.decode(
                 video_container,
                 sampling_rate,
