@@ -1,6 +1,48 @@
 # Video Gesture Action Classification
 Inspired by the official pytorch implementation of the ICML 2021 paper [Is Space-Time Attention All You Need for Video Understanding?](https://arxiv.org/pdf/2102.05095.pdf). Nowadays, TimeSformer provides an efficient video classification framework that achieves state-of-the-art results on several video action recognition benchmarks such as Kinetics-400. In this repository, I will tune the model TimeSformer with Pytorch code for training and testing a shortened version of TimeSFormer called LightTimeSFormer by optimizing some parameters in the original architecture to avoid overfitting issues. I finally validate both models on datasets MuWiGes. The experiments confirm and provide recommendations for further research on HAR with CNNs or Transformer models in the future.
 
+# General Framework
+I propose a framework for human action recognition, as illustrated in Fig.1.
+It is composed of two main phases:
+
+– Training phase takes the samples from the training set and learns the model
+parameters.
+
+– Testing phase validates the performance of the trained model with the testing set.
+
+![Recognition model](image/recognition_model2.PNG)
+
+Our recognition model is constructed as follows: Initially, the video datasets are divided into two sets — the training set and the testing set. The original video consists of different stacked frames, and I will filter out limited significant frames through the sampling technique to be pushed into the model as input frames. Subsequently, the data is trained with a base model and a modified version of TimeSformer, resulting in recognition models that have learned important features from various activities. In the last step, I will evaluate the performance of this model on the testing set.
+
+For both phases, I had to extract some keyframes from the video data to create a shorter clip before feeding it into the model. I call this step data sampling. I'll then apply a random sampling strategy during the training phase to vary the frames taken. For consistency, during the testing phase, for a fair comparison of different methods, I use a uniform sampling technique.
+
+# Recognition model
+
+In this work, I initially investigate the TimeSFormer, a transformer model which is recently introduced by Bertasius et al. and has been shown to outperform existing methods. The TimeSformer architecture is built based on the model ViT (Vision Transformer) architecture. This model extends ViT from image inputs to videos by proposing and experimenting with variations of Self-Attention schemes in both spatial and temporal dimensions in videos. The overall LightTimeSformer architecture can be seen:
+
+![Transformer model for human action recognition](image/timesformer3.png)
+
+**Input:** The model’s input is a short clip extracted from the original video. The video has dimensions (H, W, 3, F) along with the parameter Sampling rate. Additionally, the default frame rate per second (FPS) for all videos is set to 30. More details about these parameters are as follows:
+* (H, W) represents the video resolution, and it is resized to ensure both H
+and W have the same size, resulting in a square-shaped frame. ”3” is the
+number of color channels (RGB). F is the number of frames in the input
+short clip.
+* Sampling rate is the number of consecutive frames in the original video to
+select one frame. The selected frames depend on the parameter F. For example, if a video has 128 frames, F = 4, and the Sampling rate = 32, which
+means that for every 32 frames, a frame will be selected until 4 frames are
+chosen to form a clip.
+* The default config of the model TimeSformer: 224 × 224 × 3 × 8, Sampling rate = 32. In the initial stage, videos is segmented into short clips and each frame in the clips is then divided into patches with the same size. The patches are flattened into a vector containing two kinds of information: the position of the patch in the frame and the position of the frame containing that patch in the clip - This process serves as the Positional Embedding of the input to the Transformers network, enabling the Self-Attention mechanism to capture the positions of components in
+the sequence. Subsequently, the vectors enter the Encoder block, passing through layers such as normalization (Norm), Multi-head attention (including Temporal Attention and Spatial Attention, which have 12 ”head” for each block), combined with residual connection methods, and then through a Multi-Layer Perceptron (MLP) layer. The output becomes the input to the next Encoder block, and after passing through 12 times in Encoder blocks,
+
+**Output:** A probability vector corresponding to the number of classes in the given tasks.
+
+**LightTimeSformer:**
+we will propose a variation of TimeSformer called LightTimeSformer in an attempt to adapt the model with short gesture datasets. the parameters are also modified to make LightTimeSformer optimized on the experimented datasets. Several major details of LightTimeSFormer’s configuration are as follows:
+
+![Change frames input](image/change-numframes3.PNG) ![Change the Sampling Rate](image/change-samplingrate.PNG)
+
+
+
 # TimeSformer
 If you find TimeSformer useful in your research, please use the following BibTeX entry for citation.
 ```BibTeX
