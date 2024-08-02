@@ -1,9 +1,8 @@
+# Video Gesture Action Classification
+Inspired by the official pytorch implementation of the ICML 2021 paper [Is Space-Time Attention All You Need for Video Understanding?](https://arxiv.org/pdf/2102.05095.pdf). Nowadays, TimeSformer provides an efficient video classification framework that achieves state-of-the-art results on several video action recognition benchmarks such as Kinetics-400. In this repository, I will tune the model TimeSformer with Pytorch code for training and testing a shortened version of TimeSFormer called LightTimeSFormer by optimizing some parameters in the original architecture to avoid overfitting issues. I finally validate both models on datasets MuWiGes. The experiments confirm and provide recommendations for further research on HAR with CNNs or Transformer models in the future.
+
 # TimeSformer
-
-This is an official pytorch implementation of our ICML 2021 paper [Is Space-Time Attention All You Need for Video Understanding?](https://arxiv.org/pdf/2102.05095.pdf). In this repository, we provide PyTorch code for training and testing our proposed TimeSformer model. TimeSformer provides an efficient video classification framework that achieves state-of-the-art results on several video action recognition benchmarks such as Kinetics-400.
-
 If you find TimeSformer useful in your research, please use the following BibTeX entry for citation.
-
 ```BibTeX
 @inproceedings{gberta_2021_ICML,
     author  = {Gedas Bertasius and Heng Wang and Lorenzo Torresani},
@@ -13,10 +12,9 @@ If you find TimeSformer useful in your research, please use the following BibTeX
     year = {2021}
 }
 ```
-
 # Model Zoo
 
-We provide TimeSformer models pretrained on Kinetics-400 (K400), Kinetics-600 (K600), Something-Something-V2 (SSv2), and HowTo100M datasets.
+Provide TimeSformer models pretrained on Kinetics-400 (K400), Kinetics-600 (K600), Something-Something-V2 (SSv2), and HowTo100M datasets.
 
 | name | dataset | # of frames | spatial crop | acc@1 | acc@5 | url |
 | --- | --- | --- | --- | --- | --- | --- |
