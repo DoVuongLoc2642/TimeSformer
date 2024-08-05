@@ -37,13 +37,63 @@ the sequence. Subsequently, the vectors enter the Encoder block, passing through
 **Output:** A probability vector corresponding to the number of classes in the given tasks.
 
 **LightTimeSformer:**
-we will propose a variation of TimeSformer called LightTimeSformer in an attempt to adapt the model with short gesture datasets. the parameters are also modified to make LightTimeSformer optimized on the experimented datasets. Several major details of LightTimeSFormer’s configuration are as follows:
+I will propose a variation of TimeSformer called LightTimeSformer in an attempt to adapt the model with short gesture datasets. the parameters are also modified to make LightTimeSformer optimized on the experimented datasets. Several major details of LightTimeSFormer’s configuration are as follows:
 
 ![Change frames input](image/change-numframes3.PNG) ![Change the Sampling Rate](image/change-samplingrate.PNG)
 
 
+# Dataset
 
-# TimeSformer
+MuWiGes datasets: The research team of the AFOSR project from the paper [Hand Gesture Recognition From Wrist-Worn Camera for Human–Machine Interaction](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10135101) designed a device equipped with a camera, worn on the wrist like a smartwatch. The camera is set up to focus on the hand during gesture performance. During data collection, volunteers will wear the device in an environment with sufficient lighting conditions. 
+
+![Wristworn camera](image/wristworn.png)
+
+The collected dataset consists of 5,408 RGB video samples of 12 gestures performed by 50 participants, including 30 males and 20 females. The dataset features diversity in backgrounds, viewpoints, and participants. After collecting the dataset, the research team assigned labels to the 12 gestures, corresponding to the numbers from G1 to G12.
+
+![12 Gesture label in the dataset](image/gesturemuwiges.png)
+
+Given the dataset's diversity in backgrounds and participants, the training and testing sets were divided in two ways to perform a comprehensive evaluation:
+
+* **Cross Subject:** The training set includes data from 35 participants with 3,636 samples, and the testing set consists of data from the remaining 15 participants with 1,772 samples.
+
+* **Cross Scene_Subject:** The testing set includes data from 15 participants collected in the same environment, comprising 1,775 samples. The training set includes data from the remaining 35 participants, with 3,633 samples.
+
+## Experimental results
+
+I conducted experiments on two models TimeSformer and LightTimeSformer. In the training phase, the loss function of both models gradually decrease across epochs. As illustrated in the following picture , it is evident that the Loss function of LightTimeSformer shows signs of earlier convergence and slightly lower than that of TimeSformer. 
+
+![Loss function on MuWiGes dataset](image/Train_error_Muwiges.PNG)
+
+The accuracy of each gesture in the testing process can be seen in next pitucre. With TimeSformer, gestures G2 and G5 achieved the highest accuracies while the remaining gestures have lower accuracy and are more easily to be mispredicted. In contrast, LightTimeSformer shows significant improvements for gestures G1 and G2, achieving high accuracy levels between 80-95%. Gestures from G8 to G12 also gain much higher accuracy. A few gestures have their accuracy moderately dropped such as G5, G6 and G7. Only gesture G6 in cross-scene-subject is significantly mispredicted. The reason is that the more accurate gestures are likely to have the stark differences of trajectories whereas the less accurate gestures have the similar trajectories that confuse the model. Therefore, I can enhance the dataset by constructing gestures with more distinct motion trajectories to improve overall performance. In conclusion, LightTimeSformer has significantly improved the accuracy of certain gestures and reduce overfitting problem, resulting in a more consistent recognition gestures model.
+
+![Performance on MuWiGes dataset compared to other state-of-art models](image/performance with other CNN models.PNG)
+
+| Model | Video Types | Datasets Type | Pretrained | acc@1 | acc@5 | Resolution | Params | GFLOPs |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | 
+| C3D | RGB | Cross-subject | Kinetics 700 | 70.88 | 96.33| 112x112 | 63.37M | 77.3 |
+| R3D-50 | RGB | Cross-subject | Kinetics 700 | 88.54 | 99.21| 224x224 | 46.2M | 80.1 |
+| EfficentNet3D-b0 | RGB | Cross-subject | Kinetics 600 | 52.94 | 89.79 | 224x224 | 4.72M | 0.06 |
+| MobileNet3D_v2_1.0x| RGB | Cross-subject | Kinetics 600 | 67.42 | 96.26| 112x112 | 2.4M | 1,1 |
+| R3D-18 | RGB | Cross-subject | Kinetics 700 | 76.85| 95.35 | 224x224 | 33.2M | 65.9 |
+| MoviNet-a0 | RGB | Cross-subject | Kinetics 600 | 92.44 | 99.38| 172x172 | 1.9M | 1.8 |
+| MoviNet-a2 | RGB | Cross-subject | Kinetics 600 | 93.28 | 99.66| 172x172 | 4M | 4.9 |
+| MoviNet-a2 | RGB | Cross-subject | Kinetics 600 | 94.81 | 99.55| 224x224 | 4M | 4.9 |
+| MoviNet-a5 | RGB | Cross-subject | Kinetics 600 | 92.78 | 99.42| 172x172 | 17.5M | 23.9 |
+| MoviNet-a2 | OF | Cross-subject | Kinetics 600 | 95.59 | 99.83| 224x224 | 4M | 4.9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | 
+| TimeSformer | RGB | Cross-subject | ImageNet-1K | 50.96 | 86.51| 224x224 | 121.2M | 196.1 |
+| TimeSformer | RGB | Cross-scene-subject | ImageNet-1K | 48.52 | 91.44| 224x224 | 121.2M | 196.1 |
+| **LightTimeSformer** | **RGB** | **Cross-subject** | **ImageNet-1K** | **66.25** | **96.67**| **224x224** | **121.2M** | **196.1** |
+| **LightTimeSformer** | **RGB** | **Cross-scene-subject** | **ImageNet-1K** | **54.03** | **95.83**| **224x224** | **121.2M** | **196.1** |
+
+In addition, I conduct a performance comparison of TimeSformer with other CNN models on the MuWiGes dataset in the paper [Hand Gesture Recognition From Wrist-Worn Camera for Human–Machine Interaction](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10135101). Compared to the TimeSformer model, the LightTimeSformer model has shown an improvement in performance by approximately 16% with cross-subject type, with a Top1-Accuracy of 66.25% and Top5-Accuracy of 96.67%. Meanwhile, with cross-scene-subject type, the LightTimeSformer model witnessed an increase in model performance of about 6%, achieving a Top1-Accuracy of 54.03% and a Top-5-Accuracy of 95.83%. 
+
+In addition, Top5-Accuracy is always higher than or equal to Top1-Accuracy as it can make more predictions with a higher probability of being correct. Moreover, the MuWiGes dataset has a limited number of labels, with only 12 labels, while other large-scale datasets may have thousands of labels. Thus, although Top5-Accuracy achieved a higher value than Top1-Accuracy, Top1-Accuracy is much more crucial in the case of this dataset. In conclusion, these results are not yet promising for practical applications, as they still fall short compared to simpler 3D CNN models, which can achieve around 90% performance on the MuWiGes dataset. One can conclude that for smaller datasets like MuWiGes, TimeSformer doesn’t yield the best performance.
+
+
+
+
+# Reference: TimeSformer
 If you find TimeSformer useful in your research, please use the following BibTeX entry for citation.
 ```BibTeX
 @inproceedings{gberta_2021_ICML,
